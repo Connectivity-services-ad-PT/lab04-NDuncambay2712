@@ -14,15 +14,15 @@ echo "[Lab02] Collecting tool versions..."
   npm --version || true
   echo
   echo "## Spectral"
-  spectral --version || true
+  npx @stoplight/spectral-cli --version || true
   echo
   echo "## Prism"
-  prism --version || true
+  npx @stoplight/prism-cli --version || true
 } > evidence/buoi-02/tool-versions.txt
 
 echo "[Lab02] Running Spectral lint..."
 set +e
-spectral lint openapi.yaml --ruleset campus-spectral.yaml --format text > evidence/buoi-02/spectral-report.txt
+npx @stoplight/spectral-cli lint openapi.yaml --ruleset campus-spectral.yaml --format text > evidence/buoi-02/spectral-report.txt
 LINT_EXIT=$?
 set -e
 
