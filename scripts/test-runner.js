@@ -10,6 +10,22 @@ if (!fs.existsSync(reportsDir)) {
     fs.mkdirSync(reportsDir, { recursive: true });
 }
 
+// Copy environment files for team-specific names compatibility
+try {
+    const mockEnvSrc = path.join(__dirname, '../postman/environments/FIT4110_lab03_mock.postman_environment.json');
+    const mockEnvDst = path.join(__dirname, '../postman/environments/notification_mock.postman_environment.json');
+    const localEnvSrc = path.join(__dirname, '../postman/environments/FIT4110_lab03_local.postman_environment.json');
+    const localEnvDst = path.join(__dirname, '../postman/environments/notification_local.postman_environment.json');
+    if (fs.existsSync(mockEnvSrc)) {
+        fs.copyFileSync(mockEnvSrc, mockEnvDst);
+    }
+    if (fs.existsSync(localEnvSrc)) {
+        fs.copyFileSync(localEnvSrc, localEnvDst);
+    }
+} catch (e) {
+    console.error('Failed to create team-specific environment copies:', e.message);
+}
+
 function runNewman(envFile, reportPrefix, callback) {
     console.log(`=== Running Newman tests for ${reportPrefix} ===`);
     const newmanCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
@@ -166,6 +182,23 @@ function runLocalTests() {
                     server.kill('SIGINT');
                     prismVision.kill('SIGINT');
                 }
+
+                // Copy reports to generic names for submission
+                try {
+                    const localHtml = path.join(__dirname, '../reports/newman-local-report.html');
+                    const genericHtml = path.join(__dirname, '../reports/newman-report.html');
+                    const localXml = path.join(__dirname, '../reports/newman-local-report.xml');
+                    const genericXml = path.join(__dirname, '../reports/newman-report.xml');
+                    if (fs.existsSync(localHtml)) {
+                        fs.copyFileSync(localHtml, genericHtml);
+                    }
+                    if (fs.existsSync(localXml)) {
+                        fs.copyFileSync(localXml, genericXml);
+                    }
+                } catch (e) {
+                    console.error('Failed to copy generic Newman reports:', e.message);
+                }
+
                 if (code !== 0) {
                     console.error('Local tests failed!');
                     process.exit(1);
@@ -196,12 +229,19 @@ function runLocalTests() {
 // Linting step
 function runLint() {
     console.log('=== Linting OpenAPI Contract ===');
+    const spectralCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    const reportPath = path.join(__dirname, '../reports/contract-lint-report.txt');
     try {
-        const spectralCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-        execSync(`${spectralCmd} spectral lint contracts/notification.openapi.yaml --ruleset campus-spectral.yaml --format text`, { stdio: 'inherit' });
+        const output = execSync(`${spectralCmd} spectral lint contracts/notification.openapi.yaml --ruleset campus-spectral.yaml --format text`);
+        fs.writeFileSync(reportPath, output);
+        console.log(output.toString());
         console.log('Spectral lint check passed.');
     } catch (error) {
         console.error('Spectral lint check failed!');
+        if (error.stdout) {
+            fs.writeFileSync(reportPath, error.stdout);
+            console.log(error.stdout.toString());
+        }
         process.exit(1);
     }
 }
