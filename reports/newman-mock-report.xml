@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Pair04 Notification Service Contract Tests" tests="17" time="0.328">
+  <testsuite name="01_Functional / Check Health" id="58d2274f-ceb2-4296-9f05-b8e7a5d1ff82" timestamp="2026-05-28T01:27:11.559Z" tests="2" failures="0" errors="0" time="0.058">
+    <testcase name="Status code is 200 OK" time="0.058" classname="01FunctionalCheckHealth"/>
+    <testcase name="Response is JSON and matches HealthStatus schema" time="0.058" classname="01FunctionalCheckHealth"/>
+  </testsuite>
+  <testsuite name="01_Functional / POST {{baseUrl}}/events/alerts (Gửi sự kiện cảnh báo mới)" id="a1f0b4df-132c-4286-90de-bac68a49ccdb" timestamp="2026-05-28T01:27:11.559Z" tests="2" failures="0" errors="0" time="0.031">
+    <testcase name="Status code is 201 Created" time="0.031" classname="01FunctionalPostBaseUrlEventsAlertsGiSKinCnhBaoMi"/>
+    <testcase name="Response has eventId and acceptedAt" time="0.031" classname="01FunctionalPostBaseUrlEventsAlertsGiSKinCnhBaoMi"/>
+  </testsuite>
+  <testsuite name="01_Functional / GET {{baseUrl}}/events/{eventId} (Truy vấn chi tiết &amp; trạng thái gửi tin)" id="b7e16d15-66a4-462c-9ae5-46ef04c6f027" timestamp="2026-05-28T01:27:11.559Z" tests="2" failures="0" errors="0" time="0.041">
+    <testcase name="Status code is 200 OK" time="0.041" classname="01FunctionalGetBaseUrlEventsEventIdTruyVnChiTitAmpTrngThaiGiTin"/>
+    <testcase name="Response contains delivery history (Send notification / Retry status)" time="0.041" classname="01FunctionalGetBaseUrlEventsEventIdTruyVnChiTitAmpTrngThaiGiTin"/>
+  </testsuite>
+  <testsuite name="01_Functional / Get Events History" id="db02ef5a-d2bf-44c5-a90b-21f758f1532d" timestamp="2026-05-28T01:27:11.559Z" tests="2" failures="0" errors="0" time="0.021">
+    <testcase name="Status code is 200 OK" time="0.021" classname="01FunctionalGetEventsHistory"/>
+    <testcase name="Response conforms to AlertEventPage schema" time="0.021" classname="01FunctionalGetEventsHistory"/>
+  </testsuite>
+  <testsuite name="02_Auth / POST {{baseUrl}}/events/alerts (Thiếu Token)" id="57f3f264-4d44-43af-8d2c-73061929d522" timestamp="2026-05-28T01:27:11.559Z" tests="2" failures="0" errors="0" time="0.023">
+    <testcase name="Unauthorized request returns 401" time="0.023" classname="02AuthPostBaseUrlEventsAlertsThiuToken"/>
+    <testcase name="Error follows ProblemDetails schema" time="0.023" classname="02AuthPostBaseUrlEventsAlertsThiuToken"/>
+  </testsuite>
+  <testsuite name="02_Auth / Invalid Token Signature (Local Only)" id="9f1e612c-1787-42a5-b981-7112b1dc8413" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Skip signature check in mock server (stateless)" time="0.006" classname="02AuthInvalidTokenSignatureLocalOnly"/>
+  </testsuite>
+  <testsuite name="02_Auth / Expired Token (Local Only)" id="09a4a91f-ed15-4912-89e6-79dc3dfcb9a3" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Skip expiration check in mock server" time="0.008" classname="02AuthExpiredTokenLocalOnly"/>
+  </testsuite>
+  <testsuite name="02_Auth / Forbidden Access Token" id="b6120b5a-0807-4feb-9cd3-7a0de7d58a8e" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Skip role authorization check in mock server" time="0.008" classname="02AuthForbiddenAccessToken"/>
+  </testsuite>
+  <testsuite name="03_Negative / POST {{baseUrl}}/events/alerts (Invalid Channel / Sai định dạng UUID)" id="1b173afd-234e-4155-83c0-55c5f2f87f25" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="Status code is 422 Unprocessable Entity (Mock Validation)" time="0.013" classname="03NegativePostBaseUrlEventsAlertsInvalidChannelSaiDnhDngUuid"/>
+  </testsuite>
+  <testsuite name="03_Negative / POST {{baseUrl}}/events/alerts (Unprocessable Entity - Tương lai)" id="9c4fb40a-b5b0-4916-a662-7d7eec580123" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="Skip future date business logic check in mock environment" time="0.009" classname="03NegativePostBaseUrlEventsAlertsUnprocessableEntityTngLai"/>
+  </testsuite>
+  <testsuite name="03_Negative / Get Non-Existent Event (404)" id="e209ea15-3e6b-4a31-8232-cedd97798084" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Skip 404 test in stateless mock environment" time="0.007" classname="03NegativeGetNonExistentEvent404"/>
+  </testsuite>
+  <testsuite name="04_Boundary_Reliability / POST {{baseUrl}}/events/alerts (Dedupe - Kiểm tra chống trùng lặp)" id="1a55e75b-15df-46ca-a911-91739cc1edd2" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Skip duplicate dedupe check in mock" time="0.007" classname="04BoundaryReliabilityPostBaseUrlEventsAlertsDedupeKimTraChngTrungLp"/>
+  </testsuite>
+  <testsuite name="04_Boundary_Reliability / History - Limit boundary (limit=0)" id="cf822401-8f2d-4b9f-b8a6-4b45cd6861fb" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Status code is 422 Unprocessable Entity (Mock Validation)" time="0.007" classname="04BoundaryReliabilityHistoryLimitBoundaryLimit0"/>
+  </testsuite>
+  <testsuite name="04_Boundary_Reliability / History - Limit boundary (limit=101)" id="d4e5092d-ada1-408c-a00f-46bc7d27411f" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Status code is 422 Unprocessable Entity (Mock Validation)" time="0.006" classname="04BoundaryReliabilityHistoryLimitBoundaryLimit101"/>
+  </testsuite>
+  <testsuite name="05_Consumer_side_Smoke / GET {{coreMockUrl}}/alerts/{alertId} (Upstream Alert Mock)" id="3781b77c-fc39-4e89-9b6c-08a8e1733e5c" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.074">
+    <testcase name="Can successfully reach upstream Core service mock" time="0.074" classname="05ConsumerSideSmokeGetCoreMockUrlAlertsAlertIdUpstreamAlertMock"/>
+  </testsuite>
+  <testsuite name="06_Local_only_NonFunctional / Performance SLA - Health (Local Only)" id="995a2ff7-a72e-4ff7-92af-fc79c17f5b07" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="Skip performance SLA verification in mock environment" time="0.003" classname="06LocalOnlyNonFunctionalPerformanceSlaHealthLocalOnly"/>
+  </testsuite>
+  <testsuite name="06_Local_only_NonFunctional / Performance SLA - History (Local Only)" id="ce946c03-ba4c-4252-a3e4-33eac6033e5d" timestamp="2026-05-28T01:27:11.559Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Skip performance SLA verification in mock environment" time="0.006" classname="06LocalOnlyNonFunctionalPerformanceSlaHistoryLocalOnly"/>
+  </testsuite>
+</testsuites>
