@@ -44,6 +44,12 @@ paths:
                     status: ok
                     service: notification-service
                     time: '2026-05-22T07:30:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /events/alerts:
     post:
@@ -115,6 +121,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '409':
           $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '500':
@@ -153,10 +161,14 @@ paths:
                           deviceId: CAM-SERVER-01
                     nextCursor: 'eyJwYWdlIjoyLCJzdGFydElkIjoiMDE5NmZiM2QtNGFkNy03ZDFlLTlmNDktNWQ1MTQ4ZDJiYmMifQ'
                     hasMore: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -203,6 +215,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -673,5 +687,19 @@ components:
             title: Lỗi hệ thống nội bộ
             status: 500
             detail: Máy chủ gặp sự cố khi xử lý ghi hàng đợi.
+            instance: https://campus.local/events/alerts
+            errors: []
+
+    TooManyRequests:
+      description: Yêu cầu bị giới hạn tần suất (Rate Limit Exceeded)
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            type: https://campus.local/errors/rate-limit
+            title: Quá nhiều yêu cầu
+            status: 429
+            detail: Bạn đã vượt quá tần suất gửi sự kiện cho phép. Vui lòng thử lại sau.
             instance: https://campus.local/events/alerts
             errors: []

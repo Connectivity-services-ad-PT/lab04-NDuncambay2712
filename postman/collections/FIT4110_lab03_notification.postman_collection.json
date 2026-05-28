@@ -631,8 +631,8 @@
               "script": {
                 "exec": [
                   "if (pm.environment.get(\"env\") === \"mock\") {",
-                  "    pm.test(\"Status code is 422 Unprocessable Entity (Mock Validation)\", function () {",
-                  "        pm.response.to.have.status(422);",
+                  "    pm.test(\"Status code is 400 Bad Request (Mock Validation)\", function () {",
+                  "        pm.response.to.have.status(400);",
                   "    });",
                   "} else {",
                   "    pm.test(\"Status code is 400 Bad Request for limit boundary\", function () {",
@@ -682,8 +682,8 @@
               "script": {
                 "exec": [
                   "if (pm.environment.get(\"env\") === \"mock\") {",
-                  "    pm.test(\"Status code is 422 Unprocessable Entity (Mock Validation)\", function () {",
-                  "        pm.response.to.have.status(422);",
+                  "    pm.test(\"Status code is 400 Bad Request (Mock Validation)\", function () {",
+                  "        pm.response.to.have.status(400);",
                   "    });",
                   "} else {",
                   "    pm.test(\"Status code is 400 Bad Request for limit boundary\", function () {",

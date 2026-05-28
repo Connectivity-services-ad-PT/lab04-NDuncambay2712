@@ -27,6 +27,36 @@ function runNewman(envFile, reportPrefix, callback) {
     });
 }
 
+const net = require('net');
+
+function waitOnPort(port, timeoutMs, callback) {
+    const start = Date.now();
+    const interval = setInterval(() => {
+        const socket = new net.Socket();
+        socket.setTimeout(200);
+        socket.on('connect', () => {
+            socket.destroy();
+            clearInterval(interval);
+            callback(null);
+        });
+        socket.on('error', () => {
+            socket.destroy();
+            if (Date.now() - start > timeoutMs) {
+                clearInterval(interval);
+                callback(new Error(`Timeout waiting for port ${port}`));
+            }
+        });
+        socket.on('timeout', () => {
+            socket.destroy();
+            if (Date.now() - start > timeoutMs) {
+                clearInterval(interval);
+                callback(new Error(`Timeout waiting for port ${port}`));
+            }
+        });
+        socket.connect(port, '127.0.0.1');
+    }, 200);
+}
+
 function runMockTests() {
     console.log('=== Starting Prism Mock Server (4010) & Core Business Mock (4011) ===');
     const prismCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
@@ -53,29 +83,49 @@ function runMockTests() {
         }
     });
 
-    // Wait 5s for Prism servers to boot
-    setTimeout(() => {
-        runNewman('FIT4110_lab03_mock.postman_environment.json', 'mock', (code) => {
-            console.log('Stopping Prism mock servers...');
-            if (process.platform === 'win32') {
-                execSync(`taskkill /pid ${prism.pid} /t /f`, { stdio: 'ignore' });
-                execSync(`taskkill /pid ${prismVision.pid} /t /f`, { stdio: 'ignore' });
-            } else {
-                prism.kill('SIGINT');
-                prismVision.kill('SIGINT');
-            }
-            if (code !== 0) {
-                console.error('Mock tests failed!');
-                process.exit(1);
-            }
-            console.log('Mock tests passed successfully!');
-            if (mode === 'all') {
-                runLocalTests();
-            } else {
-                process.exit(0);
-            }
-        });
-    }, 5000);
+    let readyCount = 0;
+    const checkReady = () => {
+        readyCount++;
+        if (readyCount === 2) {
+            console.log('=== Mock servers are ready. Starting Newman tests ===');
+            runNewman('FIT4110_lab03_mock.postman_environment.json', 'mock', (code) => {
+                console.log('Stopping Prism mock servers...');
+                if (process.platform === 'win32') {
+                    execSync(`taskkill /pid ${prism.pid} /t /f`, { stdio: 'ignore' });
+                    execSync(`taskkill /pid ${prismVision.pid} /t /f`, { stdio: 'ignore' });
+                } else {
+                    prism.kill('SIGINT');
+                    prismVision.kill('SIGINT');
+                }
+                if (code !== 0) {
+                    console.error('Mock tests failed!');
+                    process.exit(1);
+                }
+                console.log('Mock tests passed successfully!');
+                if (mode === 'all') {
+                    runLocalTests();
+                } else {
+                    process.exit(0);
+                }
+            });
+        }
+    };
+
+    waitOnPort(4010, 20000, (err) => {
+        if (err) {
+            console.error(err.message);
+            process.exit(1);
+        }
+        checkReady();
+    });
+
+    waitOnPort(4011, 20000, (err) => {
+        if (err) {
+            console.error(err.message);
+            process.exit(1);
+        }
+        checkReady();
+    });
 }
 
 function runLocalTests() {
@@ -102,25 +152,45 @@ function runLocalTests() {
         }
     });
 
-    // Wait 4s for Server and Mock to boot
-    setTimeout(() => {
-        runNewman('FIT4110_lab03_local.postman_environment.json', 'local', (code) => {
-            console.log('Stopping local server and mock dependencies...');
-            if (process.platform === 'win32') {
-                execSync(`taskkill /pid ${server.pid} /t /f`, { stdio: 'ignore' });
-                execSync(`taskkill /pid ${prismVision.pid} /t /f`, { stdio: 'ignore' });
-            } else {
-                server.kill('SIGINT');
-                prismVision.kill('SIGINT');
-            }
-            if (code !== 0) {
-                console.error('Local tests failed!');
-                process.exit(1);
-            }
-            console.log('Local tests passed successfully!');
-            process.exit(0);
-        });
-    }, 4000);
+    let readyCount = 0;
+    const checkReady = () => {
+        readyCount++;
+        if (readyCount === 2) {
+            console.log('=== Local and mock servers are ready. Starting Newman tests ===');
+            runNewman('FIT4110_lab03_local.postman_environment.json', 'local', (code) => {
+                console.log('Stopping local server and mock dependencies...');
+                if (process.platform === 'win32') {
+                    execSync(`taskkill /pid ${server.pid} /t /f`, { stdio: 'ignore' });
+                    execSync(`taskkill /pid ${prismVision.pid} /t /f`, { stdio: 'ignore' });
+                } else {
+                    server.kill('SIGINT');
+                    prismVision.kill('SIGINT');
+                }
+                if (code !== 0) {
+                    console.error('Local tests failed!');
+                    process.exit(1);
+                }
+                console.log('Local tests passed successfully!');
+                process.exit(0);
+            });
+        }
+    };
+
+    waitOnPort(8000, 20000, (err) => {
+        if (err) {
+            console.error(err.message);
+            process.exit(1);
+        }
+        checkReady();
+    });
+
+    waitOnPort(4011, 20000, (err) => {
+        if (err) {
+            console.error(err.message);
+            process.exit(1);
+        }
+        checkReady();
+    });
 }
 
 // Linting step
