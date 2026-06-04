@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "eventType": "alert.created",
   "eventId": "0196fb3d-4ad7-7d1e-9f49-5d5148d2bfff",
@@ -11,3 +12,21 @@
     "location": "Building B, 2nd Floor"
   }
 }
+=======
+[
+  {
+    "device_id": "ESP32-LAB-A01",
+    "metric": "temperature",
+    "value": 31.5,
+    "unit": "celsius",
+    "timestamp": "2026-05-13T08:30:00+07:00"
+  },
+  {
+    "device_id": "ESP32-LAB-A02",
+    "metric": "humidity",
+    "value": 72,
+    "unit": "percent",
+    "timestamp": "2026-05-13T08:31:00+07:00"
+  }
+]
+>>>>>>> 6ed72e1b697c7712d522c728ea314dd245012863

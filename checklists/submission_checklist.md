@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Submission Checklist - Lab 03
 
 Before submitting Lab 03, the team must check off the following deliverables:
@@ -29,3 +30,21 @@ Before submitting Lab 03, the team must check off the following deliverables:
 - [x] Linter generates `reports/spectral-lint.log`.
 - [x] Makefile provides targets: `install`, `lint`, `mock`, `server`, `test`, `clean`.
 - [x] Action runners run successfully in GitHub actions via `.github/workflows/newman.yml`.
+=======
+# Submission Checklist – Lab 04
+
+Nộp các minh chứng sau:
+
+- [ ] `Dockerfile`
+- [ ] `.dockerignore`
+- [ ] `.env.example`
+- [ ] `RUN_LOCAL.md`
+- [ ] Contract OpenAPI đã dùng
+- [ ] Postman Collection đã chạy trên container
+- [ ] Postman Environment local/docker
+- [ ] Newman report XML/HTML
+- [ ] Log hoặc ảnh `docker build`
+- [ ] Log hoặc ảnh `docker run`
+- [ ] Log hoặc ảnh `GET /health`
+- [ ] Link hoặc tên image tag đã push
+>>>>>>> 6ed72e1b697c7712d522c728ea314dd245012863

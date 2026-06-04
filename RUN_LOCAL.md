@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Hướng dẫn Chạy Dịch vụ dưới Local (RUN_LOCAL.md)
 
 > **Registry Image Tag**: `ghcr.io/connectivity-services-ad-pt/team-notify:v0.1.0-team-notify`
@@ -15,10 +16,24 @@ Trước khi bắt đầu, hãy đảm bảo máy tính của bạn đã đượ
 Cài đặt các thư viện cần thiết phục vụ cho việc kiểm thử tự động:
 ```bash
 npm install --legacy-peer-deps
+=======
+# RUN_LOCAL.md – Hướng dẫn chạy Lab 04
+
+Tài liệu này giúp người khác clone repo sạch và chạy lại service trong Docker.
+
+---
+
+## 1. Clone repo
+
+```bash
+git clone <repo-url>
+cd FIT4110_lab04_docker_packaging
+>>>>>>> 6ed72e1b697c7712d522c728ea314dd245012863
 ```
 
 ---
 
+<<<<<<< HEAD
 ## Bước 2: Tạo các File Cấu hình cần thiết
 Hãy tạo file `.env.example` ở thư mục gốc của dự án nếu chưa có:
 ```ini
@@ -32,10 +47,17 @@ NODE_ENV=production
 Xây dựng Docker Image cho Notification Service bằng lệnh dưới đây:
 ```bash
 docker build -t fit4110/iot-ingestion:lab04 -t v0.1.0-team-notification -t v0.1.0-team-notify .
+=======
+## 2. Cài dependencies cho Newman/Prism/Spectral
+
+```bash
+npm install
+>>>>>>> 6ed72e1b697c7712d522c728ea314dd245012863
 ```
 
 ---
 
+<<<<<<< HEAD
 ## Bước 4: Khởi chạy Docker Container
 Chạy container từ Image vừa được đóng gói (cổng local mapping 8000:8000):
 ```bash
@@ -43,10 +65,33 @@ docker run --rm --name fit4110-iot-lab04 -p 8000:8000 --env-file .env.example fi
 ```
 
 Kiểm tra lại xem container đã phản hồi bình thường chưa tại endpoint `/health`:
+=======
+## 3. Build Docker image
+
+```bash
+docker build -t fit4110/iot-ingestion:lab04 .
+```
+
+---
+
+## 4. Run container
+
+```bash
+docker run --rm \
+  --name fit4110-iot-lab04 \
+  -p 8000:8000 \
+  --env-file .env.example \
+  fit4110/iot-ingestion:lab04
+```
+
+Mở terminal khác, kiểm tra:
+
+>>>>>>> 6ed72e1b697c7712d522c728ea314dd245012863
 ```bash
 curl http://localhost:8000/health
 ```
 
+<<<<<<< HEAD
 ---
 
 ## Bước 5: Chạy Kiểm thử Tự động (Newman)
@@ -76,3 +121,50 @@ Nếu môi trường của bạn hỗ trợ `make`, bạn có thể chạy các 
 - `make test-docker`: Chạy Newman kiểm thử trực tiếp trên Container đang chạy.
 - `make stop`: Dừng Docker Container đang chạy.
 
+=======
+Kết quả mong đợi:
+
+```json
+{
+  "status": "ok",
+  "service": "iot-ingestion",
+  "version": "0.4.0"
+}
+```
+
+---
+
+## 5. Chạy Newman test trên container
+
+```bash
+npm run test:local
+```
+
+Report sinh tại:
+
+```text
+reports/newman-lab04-local.xml
+reports/newman-lab04-local.html
+```
+
+---
+
+## 6. Dừng container
+
+Nếu không dùng `--rm` hoặc container còn chạy:
+
+```bash
+docker stop fit4110-iot-lab04
+```
+
+---
+
+## 7. Lệnh nhanh
+
+```bash
+make build
+make run
+make test-docker
+make stop
+```
+>>>>>>> 6ed72e1b697c7712d522c728ea314dd245012863
