@@ -1,13 +1,14 @@
 node_modules/
-.venv/
 .env
-.env.*
-!.env.example
-__pycache__/
-*.pyc
 .DS_Store
-prism.log
-reports/*.xml
-reports/*.html
-reports/*.json
-!reports/.gitkeep
+*.log
+*.tmp
+
+# Do not commit office files to student repo
+*.doc
+*.docx
+*.ppt
+*.pptx
+
+# Optional local captures
+*.har
