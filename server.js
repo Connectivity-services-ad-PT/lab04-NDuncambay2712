@@ -141,7 +141,7 @@ app.post('/events/alerts', authenticateToken, (req, res) => {
     });
 
     if (errors.length > 0) {
-        return sendProblem(res, 422, 'validation', 'Dữ liệu không hợp lệ', 'Payload thiếu các trường bắt buộc.', req.originalUrl, errors);
+        return sendProblem(res, 400, 'validation', 'Dữ liệu không hợp lệ', 'Payload thiếu các trường bắt buộc.', req.originalUrl, errors);
     }
 
     const { eventType, eventId, source, alertId, occurredAt, correlationId } = body;
@@ -304,7 +304,7 @@ app.post('/events/alerts', authenticateToken, (req, res) => {
     }
 
     if (errors.length > 0) {
-        return sendProblem(res, 422, 'validation', 'Dữ liệu không hợp lệ', 'Payload không đáp ứng các ràng buộc JSON Schema.', req.originalUrl, errors);
+        return sendProblem(res, 400, 'validation', 'Dữ liệu không hợp lệ', 'Payload không đáp ứng các ràng buộc JSON Schema.', req.originalUrl, errors);
     }
 
     // Business validation logic
@@ -356,7 +356,7 @@ app.get('/events/history', authenticateToken, (req, res) => {
             code: 'INVALID_RANGE',
             message: 'limit phải là số nguyên từ 1 đến 100.'
         }];
-        return sendProblem(res, 422, 'validation', 'Dữ liệu không hợp lệ', 'Tham số truy vấn limit không hợp lệ.', req.originalUrl, errs);
+        return sendProblem(res, 400, 'validation', 'Dữ liệu không hợp lệ', 'Tham số truy vấn limit không hợp lệ.', req.originalUrl, errs);
     }
 
     const allEvents = Array.from(eventStore.values()).sort((a, b) => {
@@ -377,7 +377,7 @@ app.get('/events/history', authenticateToken, (req, res) => {
                 code: 'INVALID_FORMAT',
                 message: 'cursor phải là chuỗi base64 hợp lệ mã hóa dữ liệu phân trang.'
             }];
-            return sendProblem(res, 422, 'validation', 'Dữ liệu không hợp lệ', 'Tham số truy vấn cursor không hợp lệ.', req.originalUrl, errs);
+            return sendProblem(res, 400, 'validation', 'Dữ liệu không hợp lệ', 'Tham số truy vấn cursor không hợp lệ.', req.originalUrl, errs);
         }
     }
 
@@ -407,7 +407,7 @@ app.get('/events/:eventId', authenticateToken, (req, res) => {
             code: 'INVALID_FORMAT',
             message: 'eventId phải đúng định dạng UUID.'
         }];
-        return sendProblem(res, 422, 'validation', 'Dữ liệu không hợp lệ', 'Định dạng UUID của field eventId không chính xác.', req.originalUrl, errs);
+        return sendProblem(res, 400, 'validation', 'Dữ liệu không hợp lệ', 'Định dạng UUID của field eventId không chính xác.', req.originalUrl, errs);
     }
 
     if (!eventStore.has(eventId)) {
