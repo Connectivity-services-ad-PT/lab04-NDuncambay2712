@@ -1,5 +1,7 @@
 # Hướng dẫn Chạy Dịch vụ dưới Local (RUN_LOCAL.md)
 
+> **Registry Image Tag**: `ghcr.io/connectivity-services-ad-pt/team-notify:v0.1.0-team-notify`
+
 Tài liệu này hướng dẫn 5 bước cơ bản để cài đặt, đóng gói Docker và chạy kiểm thử dịch vụ **Notification Service (Team Notify - Pair 04)**.
 
 ---
