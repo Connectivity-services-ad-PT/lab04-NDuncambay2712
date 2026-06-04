@@ -23,6 +23,14 @@ function sendProblem(res, status, type, title, detail, instance, errors = []) {
     });
 }
 
+// Handle JSON parse errors
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return sendProblem(res, 400, 'bad-request', 'Bad Request', 'JSON parse error', req.originalUrl, []);
+    }
+    next();
+});
+
 // Regex to validate UUID format
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -70,7 +78,7 @@ function authenticateToken(req, res, next) {
                 req.originalUrl
             );
         }
-        if (token === 'invalid-token-signature') {
+        if (token === 'invalid-token-signature' || token === 'wrong-token') {
             return sendProblem(
                 res,
                 401,
@@ -110,6 +118,7 @@ app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'ok',
         service: 'notification-service',
+        version: '1.0.0',
         time: new Date().toISOString()
     });
 });
@@ -450,6 +459,76 @@ eventStore.set(seedId1, {
         deviceId: 'CAM-SERVER-01',
         location: 'Tòa nhà A, Tầng 3'
     }
+});
+
+// 5. POST /readings
+app.post('/readings', authenticateToken, (req, res) => {
+    const body = req.body;
+    const errors = [];
+
+    const requiredFields = ['device_id', 'metric', 'value', 'timestamp'];
+    requiredFields.forEach(field => {
+        if (body[field] === undefined || body[field] === null) {
+            errors.push({
+                field,
+                code: 'MISSING_FIELD',
+                message: `Trường ${field} là bắt buộc.`
+            });
+        }
+    });
+
+    if (body.value !== undefined && typeof body.value !== 'number') {
+        errors.push({
+            field: 'value',
+            code: 'INVALID_TYPE',
+            message: 'value phải là một số.'
+        });
+    } else if (body.value !== undefined && typeof body.value === 'number') {
+        if (body.value < -40 || body.value > 80) {
+            errors.push({
+                field: 'value',
+                code: 'INVALID_RANGE',
+                message: 'value must be between -40 and 80'
+            });
+        }
+    }
+
+    if (errors.length > 0) {
+        return sendProblem(res, 422, 'validation', 'Dữ liệu không hợp lệ', 'Payload không hợp lệ', req.originalUrl, errors);
+    }
+
+    if (body.value === 80) {
+        res.setHeader('X-Warning', 'High temperature');
+    }
+
+    return res.status(201).json({
+        reading_id: 'R-20260513-1234',
+        device_id: body.device_id,
+        metric: body.metric,
+        accepted: true,
+        created_at: new Date().toISOString()
+    });
+});
+
+// GET /readings/latest
+app.get('/readings/latest', authenticateToken, (req, res) => {
+    res.status(200).json({ items: [] });
+});
+
+// GET /readings/:readingId
+app.get('/readings/:readingId', authenticateToken, (req, res) => {
+    res.status(200).json({
+        reading_id: req.params.readingId,
+        device_id: 'ESP32-LAB-A01',
+        metric: 'temperature',
+        accepted: true,
+        created_at: new Date().toISOString()
+    });
+});
+
+// Fallback 404 handler
+app.use((req, res) => {
+    sendProblem(res, 404, 'not-found', 'Not Found', 'Đường dẫn không tồn tại', req.originalUrl);
 });
 
 app.listen(PORT, () => {
